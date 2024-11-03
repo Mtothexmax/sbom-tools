@@ -1,1 +1,297 @@
 
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBOM Comparison Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .upload-box {
+            width: 48%;
+            height: 200px;
+            border: 2px dashed #aaa;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+        }
+
+        .upload-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .file-name {
+            font-size: 14px;
+            color: #333;
+            text-align: center;
+            word-break: break-all;
+            max-width: 90%;
+        }
+
+        #comparison-result {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .comparison-table th {
+            background-color: #f2f2f2;
+        }
+
+        .comparison-table th:nth-child(1),
+        .comparison-table th:nth-child(2),
+        .comparison-table th:nth-child(3),
+        .comparison-table th:nth-child(4) {
+            width: 22%;
+        }
+
+        .comparison-table th:nth-child(5) {
+            width: 7%;
+        }
+
+        .diff-added {
+            background-color: #e6ffe6;
+        }
+
+        .diff-removed {
+            background-color: #ffe6e6;
+        }
+
+        .diff-changed {
+            background-color: #fff0b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="upload-box" id="upload-box-1">
+            <input type="file" id="file-input-1" style="display: none;">
+            <button class="upload-button" onclick="document.getElementById('file-input-1').click()">Upload SBOM
+                1</button>
+            <div class="file-name" id="file-name-1"></div>
+        </div>
+        <div class="upload-box" id="upload-box-2">
+            <input type="file" id="file-input-2" style="display: none;">
+            <button class="upload-button" onclick="document.getElementById('file-input-2').click()">Upload SBOM
+                2</button>
+            <div class="file-name" id="file-name-2"></div>
+        </div>
+    </div>
+    <div id="comparison-result"></div>
+
+    <script>
+        let fileName1 = null;
+        let fileName2 = null;
+        let componentCount1 = null;
+        let componentCount2 = null;
+        let sbom1List = null;
+        let sbom2List = null;
+
+        // Set up event listeners
+        document.getElementById('file-input-1').addEventListener('change', (event) => handleFileUpload(event, 1));
+        document.getElementById('file-input-2').addEventListener('change', (event) => handleFileUpload(event, 2));
+
+        // Set up drag and drop
+        ['upload-box-1', 'upload-box-2'].forEach((id, index) => {
+            const element = document.getElementById(id);
+            element.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                element.style.backgroundColor = '#e6f7ff';
+            });
+            element.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                element.style.backgroundColor = '#fff';
+            });
+            element.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                element.style.backgroundColor = '#fff';
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    const input = document.getElementById(`file-input-${index + 1}`);
+                    input.files = e.dataTransfer.files;
+                    handleFileUpload({ target: input }, index + 1);
+                }
+            });
+        });
+
+        function handleFileUpload(event, sbomNumber) {
+            const file = event.target.files[0];
+            if (!file) {
+                console.error(`No file selected for SBOM ${sbomNumber}`);
+                return;
+            }
+
+            // Display file name
+            document.getElementById(`file-name-${sbomNumber}`).textContent = file.name;
+
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                try {
+                    const sbom = JSON.parse(e.target.result);
+                    const componentList = extractAndSortComponents(sbom);
+
+                    if (sbomNumber === 1) {
+                        fileName1 = file.name;
+                        sbom1List = componentList;
+                        componentCount1=componentList.length
+                    } else {
+                        fileName2 = file.name;
+                        sbom2List = componentList;
+                        componentCount2=componentList.length
+                    }
+                    document.getElementById(`upload-box-${sbomNumber}`).style.backgroundColor = '#e6ffe6';
+                    if (sbom1List && sbom2List) {
+                        compareSBOMs();
+                        document.getElementById(`file-name-header-1`).innerHTML = fileName1.replace(".json", "") +" ("+ componentCount1+")";
+                        document.getElementById(`file-name-header-2`).innerHTML = fileName2.replace(".json", "") + " (" + componentCount2 + ")";
+                    }
+                } catch (error) {
+                    console.error(`Error processing SBOM ${sbomNumber}:`, error);
+                    alert(`Error processing SBOM ${sbomNumber} file: ${error.message}`);
+                }
+            };
+
+            reader.onerror = function (error) {
+                console.error(`Error reading file for SBOM ${sbomNumber}:`, error);
+                alert(`Error reading file for SBOM ${sbomNumber}. Please try again.`);
+            };
+
+            reader.readAsText(file);
+
+        }
+
+        function extractAndSortComponents(sbom) {
+            if (!sbom.components || !Array.isArray(sbom.components)) {
+                throw new Error('Invalid SBOM structure: missing or invalid components array');
+            }
+
+            const componentList = sbom.components.map(component => ({
+                name: component.name || 'Unnamed Component',
+                version: component.version || 'No Version'
+            }));
+
+            return componentList.sort((a, b) => a.name.localeCompare(b.name));
+        }
+
+        function compareSBOMs() {
+            const diff = detailedDiff(sbom1List, sbom2List);
+            displayDetailedDiff(diff);
+        }
+
+        function detailedDiff(list1, list2) {
+            const result = [];
+            const map1 = new Map(list1.map(item => [item.name, item]));
+            const map2 = new Map(list2.map(item => [item.name, item]));
+            const allNames = new Set([...map1.keys(), ...map2.keys()]);
+
+            for (const name of allNames) {
+                const item1 = map1.get(name);
+                const item2 = map2.get(name);
+
+                if (item1 && item2) {
+                    if (item1.version !== item2.version) {
+                        result.push({ name, sbom1Version: item1.version, sbom2Version: item2.version, status: 'Changed' });
+                    } else {
+                        result.push({ name, sbom1Version: item1.version, sbom2Version: item2.version, status: 'Unchanged' });
+                    }
+                } else if (item1) {
+                    result.push({ name, sbom1Version: item1.version, sbom2Version: '-', status: 'Removed' });
+                } else if (item2) {
+                    result.push({ name, sbom1Version: '-', sbom2Version: item2.version, status: 'Added' });
+                }
+            }
+
+            return result.sort((a, b) => a.name.localeCompare(b.name));
+        }
+
+        function displayDetailedDiff(diff) {
+            let tableHtml = `
+                <table class="comparison-table">
+                    <tr>
+                        <th colspan="2" id="file-name-header-1">SBOM 1</th>
+                        <th colspan="2" id="file-name-header-2">SBOM 2</th>
+                        <th>Status</th>
+                    </tr>
+                    <tr>
+                        <th>Name</th>
+                        <th>Version</th>
+                        <th>Name</th>
+                        <th>Version</th>
+                        <th></th>
+                    </tr>
+            `;
+
+            diff.forEach(component => {
+                let className = '';
+                switch (component.status) {
+                    case 'Added':
+                        className = 'diff-added';
+                        break;
+                    case 'Removed':
+                        className = 'diff-removed';
+                        break;
+                    case 'Changed':
+                        className = 'diff-changed';
+                        break;
+                }
+
+                tableHtml += `
+                    <tr class="${className}">
+                        <td>${component.status !== 'Added' ? component.name : '-'}</td>
+                        <td>${component.sbom1Version}</td>
+                        <td>${component.status !== 'Removed' ? component.name : '-'}</td>
+                        <td>${component.sbom2Version}</td>
+                        <td>${component.status}</td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += '</table>';
+            document.getElementById('comparison-result').innerHTML = tableHtml;
+        }
+    </script>
+</body>
+
+</html>
