@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,7 +18,7 @@
             background-color: #fff;
             border: 1px solid #ddd;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .button-container {
@@ -27,33 +28,75 @@
         }
 
         .button {
-            margin: 10px;
-            padding: 10px 20px;
+            margin: 20px;
+            padding: 20px;
+            width: 200px;
+            height: 200px;
             border: none;
-            border-radius: 5px;
-            background-color: #4CAF50;
+            border-radius: 10px;
+            background-color: #8BC34A;
             color: #fff;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .button:hover {
-            background-color: #3e8e41;
+            background-color: #7BA33A;
         }
 
         .button:active {
             transform: scale(0.95);
         }
+
+        .button svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 10px;
+        }
+
+        .button span {
+            font-size: 18px;
+            font-weight: bold;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>SBOM Tools</h1>
         <div class="button-container">
-            <button class="button" onclick="window.open('https://cyclonedx.org/sbom-viewer/', '_blank')">Cyclone DX SBOM Viewer</button>
-            <button class="button" onclick="window.open('https://cyclonedx.org/sbom-editor/', '_blank')">Cyclone DX SBOM Editor</button>
-            <button class="button" onclick="window.open('https://cyclonedx.org/sbom-comparer/', '_blank')">Cyclone DX SBOM Comparer</button>
-            <button class="button" onclick="window.open('https://cyclonedx.org/spdx-converter/', '_blank')">SPDX / Cyclone DX SBOM Converter</button>
+            <button class="button" onclick="window.open('cyclonedx_sbom_viewer.html', '_blank')">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm-5-5h10v10h-10z" />
+                </svg>
+                <span>CycloneDX SBOM Viewer</span>
+            </button>
+            <button class="button" onclick="window.open('cyclonedx_sbom_editor.html', '_blank')">
+                <svg viewBox="0 0 24 24">
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z" />
+                </svg>
+                <span>CycloneDX SBOM Editor</span>
+            </button>
+            <button class="button" onclick="window.open('cyclonedx_sbom_comparer.html', '_blank')">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm-5-5h10v10h-10z" />
+                </svg>
+                <span>CycloneDX SBOM Comparer</span>
+            </button>
+            <button class="button" onclick="window.open('spdx_cyclonedx_converter.html', '_blank')">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm-5-5h10v10h-10z" />
+                </svg>
+                <span>SPDX / CycloneDX Converter</span>
+            </button>
         </div>
     </div>
 </body>
+
 </html>
