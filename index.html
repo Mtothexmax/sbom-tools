@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SBOM Tools</title>
-    <style>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SBOM Tools</title>
+        <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
@@ -34,17 +34,18 @@
             height: 200px;
             border: none;
             border-radius: 10px;
-            background-color: #8BC34A;
+            background: linear-gradient(145deg, #8BC34A, #7BA33A);
             color: #fff;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            transition: transform 0.2s, background 0.2s;
         }
 
         .button:hover {
-            background-color: #7BA33A;
+            background: linear-gradient(145deg, #7BA33A, #6A9325);
         }
 
         .button:active {
@@ -55,37 +56,45 @@
             width: 80px;
             height: 80px;
             margin-bottom: 10px;
+            filter: grayscale(100%) contrast(150%) sepia(100%) hue-rotate(90deg);
         }
 
         .button span {
             font-size: 18px;
             font-weight: bold;
         }
-    </style>
-</head>
+        </style>
+    </head>
 
-<body>
-    <div class="container">
-        <h1>SBOM Tools</h1>
-        <div class="button-container">
-            <button class="button" onclick="window.location.href='cyclonedx_sbom_viewer.html'">
-                <img src="cyclonedx_sbom_viewer.svg" alt="CycloneDX SBOM Viewer">
-                <span>CycloneDX SBOM Viewer</span>
-            </button>
-            <button class="button" onclick="window.location.href='cyclonedx_sbom_editor.html'">
-                <img src="cyclonedx_sbom_editor.svg" alt="CycloneDX SBOM Editor">
-                <span>CycloneDX SBOM Editor</span>
-            </button>
-            <button class="button" onclick="window.location.href='cyclonedx_sbom_comparer.html'">
-                <img src="cyclonedx_sbom_comparer.svg" alt="CycloneDX SBOM Comparer">
-                <span>CycloneDX SBOM Comparer</span>
-            </button>
-            <button class="button" onclick="window.location.href='spdx_cyclonedx_converter.html'">
-                <img src="spdx_cyclonedx_converter.svg" alt="SPDX / CycloneDX Converter">
-                <span>SPDX / CycloneDX Converter</span>
-            </button>
+    <body>
+        <div class="container">
+            <h1>SBOM Tools</h1>
+            <div class="button-container">
+                <button class="button"
+                    onclick="window.location.href='cyclonedx_sbom_viewer.html'">
+                    <img src="cyclonedx_sbom_viewer.svg"
+                        alt="CycloneDX SBOM Viewer">
+                    <span>CycloneDX SBOM Viewer</span>
+                </button>
+                <button class="button"
+                    onclick="window.location.href='cyclonedx_sbom_editor.html'">
+                    <img src="cyclonedx_sbom_editor.svg"
+                        alt="CycloneDX SBOM Editor">
+                    <span>CycloneDX SBOM Editor</span>
+                </button>
+                <button class="button"
+                    onclick="window.location.href='cyclonedx_sbom_comparer.html'">
+                    <img src="cyclonedx_sbom_comparer.svg"
+                        alt="CycloneDX SBOM Comparer">
+                    <span>CycloneDX SBOM Comparer</span>
+                </button>
+                <button class="button"
+                    onclick="window.location.href='spdx_cyclonedx_converter.html'">
+                    <img src="spdx_cyclonedx_converter.svg"
+                        alt="SPDX / CycloneDX Converter">
+                    <span>SPDX / CycloneDX Converter</span>
+                </button>
+            </div>
         </div>
-    </div>
-</body>
-
+    </body>
 </html>
